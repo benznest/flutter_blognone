@@ -1,4 +1,4 @@
-class NodeTitleDao {
+class BlognoneNodeTitleDao {
   int id;
   String urlImage;
   String title;
@@ -25,4 +25,21 @@ class NodeTitleDao {
     print("strCountComment = $countComment");
     print("----------------------");
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      "id": this.id,
+      "urlImage": this.urlImage,
+      "title": this.title,
+      "content": this.content,
+      "date": this.date,
+      "writer": this.writer,
+      "tags": this.tags,
+      "isSticky": this.isSticky,
+      "isWorkplaceNode": this.isWorkplaceNode,
+      "countComment": this.countComment,
+    };
+  }
+
+
 }

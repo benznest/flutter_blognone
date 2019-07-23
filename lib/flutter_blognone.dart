@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter_blognone/blognone_scraping.dart';
-import 'package:flutter_blognone/dao/node_title_dao.dart';
+import 'package:flutter_blognone/blognone_utils.dart';
+import 'package:flutter_blognone/dao/blognone_node_content_dao.dart';
+import 'package:flutter_blognone/dao/blognone_node_title_dao.dart';
 import 'package:http/http.dart' as http;
 
 class FlutterBlognone {
@@ -10,17 +12,30 @@ class FlutterBlognone {
 
   /// Public API
   static const String END_POINT_NODE_LIST = "";
+  static const String END_POINT_NODE_CONTENT = "node/";
 
   FlutterBlognone();
 
-  /// Get List all available symbols.
-  Future<List<NodeTitleDao>> fetchNodeTitleList({bool printJson = false}) async {
+  /// Get List all ntitle odes on blognone home page.
+  Future<List<BlognoneNodeTitleDao>> fetchNodeTitleList({bool printJson = false}) async {
     String url = Uri.https(BASE_URL, END_POINT_NODE_LIST).toString();
     var response = await http.get(url);
-    List<NodeTitleDao> listNode = BlognoneScraping.scrapeNodeTitleList(utf8.decode(response.bodyBytes));
+    List<BlognoneNodeTitleDao> listNode = BlognoneScraping.scrapeNodeTitleList(utf8.decode(response.bodyBytes));
     if (printJson) {
-      print(url);
+      printPrettyJsonList(listNode.map((item)=>item.toJson()).toList());
+
     }
     return listNode;
+  }
+
+  /// Get content in node.
+  Future<BlognoneNodeContentDao> fetchNodeContentList({int nodeId = 110985, bool printJson = false}) async {
+    String url = Uri.https(BASE_URL, END_POINT_NODE_CONTENT + "$nodeId").toString();
+    var response = await http.get(url);
+    BlognoneNodeContentDao nodeContent = BlognoneScraping.scrapeNodeContent(utf8.decode(response.bodyBytes));
+    if (printJson) {
+      printPrettyJson(nodeContent.toJson());
+    }
+    return nodeContent;
   }
 }
