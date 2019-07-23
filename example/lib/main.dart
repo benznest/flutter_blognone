@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 
 import 'package:flutter/services.dart';
+import 'package:flutter_blognone/dao/node_title_dao.dart';
 import 'package:flutter_blognone/flutter_blognone.dart';
 
 Future main() async {
-  FlutterBlognone bn = FlutterBlognone();
-  await bn.fetchNodeList();
+//  FlutterBlognone bn = FlutterBlognone();
+//  await bn.fetchNodeTitleList();
   runApp(MyApp());
 }
 
@@ -16,6 +17,8 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  FlutterBlognone bn = FlutterBlognone();
+
   @override
   void initState() {
     super.initState();
@@ -26,11 +29,24 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('Plugin example app'),
+          centerTitle: true,
+          title: Text('Blognone'),
         ),
-        body: Center(
-          child: Text('Running on:'),
-        ),
+        body: FutureBuilder(
+            future: bn.fetchNodeTitleList(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                List<NodeTitleDao> listNode = snapshot.data;
+                return ListView.builder(
+                  itemCount: listNode.length,
+                  itemBuilder: (context, i) {
+                    return Text(listNode[i].title);
+                  },
+                );
+              } else {
+                return Container();
+              }
+            }),
       ),
     );
   }
