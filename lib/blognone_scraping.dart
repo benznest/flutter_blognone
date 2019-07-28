@@ -146,7 +146,7 @@ class BlognoneScraping {
   static BlognoneNodeCommentDao scrapeComment(String body) {
     Document document = html.parse(body);
     Element elementCommentArea = document.querySelector("#comment-area");
-    elementCommentArea.querySelector("h2").remove();
+    elementCommentArea.querySelector("h2")?.remove();
     elementCommentArea.querySelector("#comments");
     String htmlComment = elementCommentArea.innerHtml;
 
@@ -184,7 +184,7 @@ class BlognoneScraping {
     }
 
     Element commentContent = commentElement.querySelector("div.comment-content");
-    commentItem.html = commentContent.innerHtml.replaceAll("\n", "").trim();
+    commentItem.content = commentContent.innerHtml.replaceAll("\n", "").trim();
 
     try {
       commentItem.avatar = commentElement.querySelector("div.user-picture>img")?.attributes["src"];

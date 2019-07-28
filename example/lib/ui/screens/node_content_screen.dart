@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_blognone/dao/blognone_node_comment_item_dao.dart';
 import 'package:flutter_blognone/dao/blognone_node_content_dao.dart';
 import 'package:flutter_blognone/flutter_blognone.dart';
+import 'package:flutter_blognone_example/node_title_list_mode.dart';
+import 'package:flutter_blognone_example/ui/screens/node_title_list_screen.dart';
 import 'package:flutter_html/flutter_html.dart';
 
 class NodeContentScreen extends StatefulWidget {
@@ -72,6 +74,10 @@ class _NodeContentScreenState extends State<NodeContentScreen> {
                 buildTagsContainer(node.tags),
                 Html(data: """ ${node.contentFull} """),
               ])),
+          Padding(
+            padding:  EdgeInsets.only(left:16.0,top: 24),
+            child: Text("${node.comments.countComment} ความคิดเห็น", style: TextStyle(fontSize: 22)),
+          ),
           for (BlognoneNodeCommentItemDao comment in node.comments.items) buildRowComment(comment)
         ]),
       ),
@@ -92,9 +98,9 @@ class _NodeContentScreenState extends State<NodeContentScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Text("By ${comment.username} , ${comment.datetime}"),
-            Html(data: """ ${comment.html} """),
+            Html(data: """ ${comment.content} """),
             SizedBox(height: 16),
-            for (BlognoneNodeCommentItemDao item in comment.items) buildRowComment(item,isReplyComment: true)
+            for (BlognoneNodeCommentItemDao item in comment.items) buildRowComment(item, isReplyComment: true)
           ],
         ));
   }
@@ -104,13 +110,18 @@ class _NodeContentScreenState extends State<NodeContentScreen> {
       padding: EdgeInsets.symmetric(vertical: 6),
       child: Wrap(spacing: 4, alignment: WrapAlignment.start, runAlignment: WrapAlignment.start, direction: Axis.horizontal, children: <Widget>[
         for (String tag in tags)
-          Container(
-              padding: EdgeInsets.all(4),
-              decoration: BoxDecoration(border: Border.all(color: Colors.grey[300], width: 1)),
-              child: Text(
-                tag,
-                style: TextStyle(fontSize: 12),
-              ))
+          GestureDetector(
+            child: Container(
+                padding: EdgeInsets.all(4),
+                decoration: BoxDecoration(border: Border.all(color: Colors.grey[300], width: 1)),
+                child: Text(
+                  tag,
+                  style: TextStyle(fontSize: 12),
+                )),
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => NodeTitleListScreen(title: tag,mode: NodeTitleListMode.TAG, tag: tag)));
+            },
+          )
       ]),
     );
   }

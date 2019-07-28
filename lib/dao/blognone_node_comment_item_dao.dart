@@ -1,6 +1,6 @@
 class BlognoneNodeCommentItemDao {
   int id;
-  String html;
+  String content;
   String username;
   String datetime;
   String avatar;
@@ -8,17 +8,18 @@ class BlognoneNodeCommentItemDao {
 
   List<BlognoneNodeCommentItemDao> items;
 
-  BlognoneNodeCommentItemDao({this.html}) {
+  BlognoneNodeCommentItemDao({this.content}) {
     items = List();
   }
 
   get isReplyComment => replyTo != null;
+  get hasReply => items.isNotEmpty;
 
   Map<String, dynamic> toJson() {
     return {
       "id": this.id,
       "replyTo": this.replyTo,
-      "html": this.html,
+      "content": this.content,
       "username": this.username,
       "datetime": this.datetime,
       "avatar": avatar,

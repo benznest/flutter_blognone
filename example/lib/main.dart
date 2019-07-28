@@ -4,6 +4,7 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flutter_blognone/dao/blognone_node_title_dao.dart';
 import 'package:flutter_blognone/flutter_blognone.dart';
+import 'package:flutter_blognone_example/ui/screens/home_screen.dart';
 import 'package:flutter_blognone_example/ui/screens/node_title_list_screen.dart';
 
 Future main() async {
@@ -27,6 +28,6 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        home: NodeTitleListScreen());
+        home: HomeScreen());
   }
 }

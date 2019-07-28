@@ -1,15 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_blognone/dao/blognone_node_title_dao.dart';
 import 'package:flutter_blognone/flutter_blognone.dart';
+import 'package:flutter_blognone_example/node_title_list_mode.dart';
 import 'package:flutter_blognone_example/ui/screens/node_content_screen.dart';
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
 
 class NodeTitleListScreen extends StatefulWidget {
+  final NodeTitleListMode mode;
+  final String title;
+  final String tag;
+
+  NodeTitleListScreen({this.title = "Blognone", this.mode = NodeTitleListMode.ALL, this.tag = ""});
+
   @override
   _NodeTitleListScreenState createState() => _NodeTitleListScreenState();
 }
 
-class _NodeTitleListScreenState extends State<NodeTitleListScreen> {
+class _NodeTitleListScreenState extends State<NodeTitleListScreen> with AutomaticKeepAliveClientMixin<NodeTitleListScreen> {
   int currentPage = 0;
   bool isLoadingMore = false;
   FlutterBlognone bn;
@@ -27,7 +34,7 @@ class _NodeTitleListScreenState extends State<NodeTitleListScreen> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text('Blognone'),
+        title: Text(widget.title),
       ),
       body: Container(
         child: FutureBuilder(
@@ -118,13 +125,18 @@ class _NodeTitleListScreenState extends State<NodeTitleListScreen> {
       padding: EdgeInsets.symmetric(vertical: 6),
       child: Wrap(spacing: 4, alignment: WrapAlignment.start, runAlignment: WrapAlignment.start, direction: Axis.horizontal, children: <Widget>[
         for (String tag in tags)
-          Container(
-              padding: EdgeInsets.all(4),
-              decoration: BoxDecoration(border: Border.all(color: Colors.grey[300], width: 1)),
-              child: Text(
-                tag,
-                style: TextStyle(fontSize: 12),
-              ))
+          GestureDetector(
+            child: Container(
+                padding: EdgeInsets.all(4),
+                decoration: BoxDecoration(border: Border.all(color: Colors.grey[300], width: 1)),
+                child: Text(
+                  tag,
+                  style: TextStyle(fontSize: 12),
+                )),
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => NodeTitleListScreen(title: tag,mode: NodeTitleListMode.TAG, tag: tag)));
+            },
+          )
       ]),
     );
   }
@@ -145,8 +157,22 @@ class _NodeTitleListScreenState extends State<NodeTitleListScreen> {
 
   Future<List<BlognoneNodeTitleDao>> loadNodeTitleList() async {
     if (currentPage == 0 && listNode.isEmpty) {
-      listNode = await bn.fetchNodeTitleList(page: currentPage);
+      print("load node");
+      if (widget.mode == NodeTitleListMode.ALL) {
+        listNode = await bn.fetchNodeTitleList(page: currentPage);
+      } else if (widget.mode == NodeTitleListMode.TAG) {
+        listNode = await bn.fetchNodeTitleListByTag(tag: widget.tag, page: currentPage);
+      } else if (widget.mode == NodeTitleListMode.FEATURE) {
+        listNode = await bn.fetchNodeTitleListFeature(page: currentPage);
+      } else if (widget.mode == NodeTitleListMode.INTERVIEW) {
+        listNode = await bn.fetchNodeTitleListInterview(page: currentPage);
+      } else if (widget.mode == NodeTitleListMode.WORKPLACE) {
+        listNode = await bn.fetchNodeTitleListWorkPlace(page: currentPage);
+      }
     }
     return listNode;
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }
