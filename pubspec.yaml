@@ -1,8 +1,8 @@
 name: flutter_blognone
-description: A new Flutter plugin.
-version: 0.0.1
-author:
-homepage:
+description: Flutter package for browsing news headlines and news content on the blognone.com
+version: 1.0.0
+author: benznest <benz7net@gmail.com>
+homepage: https://github.com/benznest/flutter_blognone
 
 environment:
   sdk: ">=2.1.0 <3.0.0"

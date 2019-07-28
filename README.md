@@ -1,13 +1,13 @@
 # Flutter Blognone
 
-Flutter Package สำหรับดึงหัวข้อข่าวและเนื้อหาข่าวในเว็บไซต์ [blognone.com](https://www.blognone.com)
-ขอเรียนว่า package ดังกล่าวนี้ เป็นการพัฒนาจากนักพัฒนาภายนอก ไม่ได้ถูกพัฒนาโดยทีมงานของ blognone
+Flutter Package สำหรับเรียกดูหัวข้อข่าวและเนื้อหาข่าวในเว็บไซต์ [blognone.com](https://www.blognone.com)
+ขอเรียนว่า package ดังกล่าวนี้ เป็นการพัฒนาจากนักพัฒนาภายนอก ไม่ได้ถูกพัฒนาโดยทีมงานของ blognone แต่อย่างใด
 
 ## การติดตั้ง
 เพิ่ม dependencies ในไฟล์ pubspec.yaml
 
 ```bash
-flutter_blognone: 1.0.0
+flutter_blognone: ^1.0.0
 ```
 
 จากนั้น import flutter_blognone มายังไฟล์ dart ในโปรเจคของคุณ
@@ -18,13 +18,13 @@ import 'package:flutter_blognone/flutter_blognone.dart';
 
 ## การใช้งาน
 
-สร้างตัวแปร instance ของ FlutterBlognone
+สร้าง instance ของ FlutterBlognone
 
 ```dart
 var bn = FlutterBlognone();
 ```
 
-### เรียกดูหัวข้อข่าว
+### การเรียกดูหัวข้อข่าว
 
 เรียกหัวข้อข่าวจากเว็บไซต์ blognone โดยการกำหนดค่า page (เริ่มต้นที่ 0 คือข่าวในหน้าแรก)
 
@@ -43,7 +43,7 @@ for(var node in listNode){
 }
 ```
 
-### เรียกดูหัวข้อข่าว (Feature)
+### การเรียกดูหัวข้อข่าว (Feature)
 
 เรียกหัวข้อข่าวจากเมนู feature ใน blognone
 
@@ -51,7 +51,7 @@ for(var node in listNode){
 var listNode = await bn.fetchNodeTitleListFeature();
 ```
 
-### เรียกดูหัวข้อข่าวบทสัมภาษณ์ (Interview)
+### การเรียกดูหัวข้อข่าวบทสัมภาษณ์ (Interview)
 
 เรียกหัวข้อข่าวจากเมนู interview ใน blognone
 
@@ -60,7 +60,7 @@ var listNode = await bn.fetchNodeTitleListInterview();
 ```
 
 
-### เรียกดูหัวข้อข่าวบทสถานที่ทำงาน (Workplace)
+### การเรียกดูหัวข้อข่าวสถานที่ทำงาน (Workplace)
 
 เรียกหัวข้อข่าวจากเมนู workplace ใน blognone
 
@@ -68,7 +68,7 @@ var listNode = await bn.fetchNodeTitleListInterview();
 var listNode = await bn.fetchNodeTitleListWorkplace();
 ```
 
-### เรียกดูหัวข้อข่าวจากแท็ก (Tag หรือ Topic)
+### การเรียกดูหัวข้อข่าวจากแท็ก (Tag หรือ Topic)
 
 เรียกหัวข้อข่าวจาก tag ใน blognone
 
@@ -76,7 +76,7 @@ var listNode = await bn.fetchNodeTitleListWorkplace();
 var listNode = await bn.fetchNodeTitleListByTag(tag: "Microsoft");
 ```
 
-### เรียกดูเนื้อหาข่าว
+### การเรียกดูเนื้อหาข่าว
 
 แสดงเนื้อหาภายในข่าว โดยกำหนดค่า nodeId หรือหมายเลข id ของข่าว
 เช่น [https://www.blognone.com/node/111060](https://www.blognone.com/node/111060)
@@ -98,7 +98,7 @@ var nodeContent = await bn.fetchNodeContentList(nodeId: id);
 }
 ```
 
-### เรียกดูความคิดเห็นและการตอบกลับ
+### การเรียกดูความคิดเห็นและการตอบกลับ
 
 ความคิดเห็นนั้นจะอยู่ใน NodeContent (เนื้อหาข่าว) ดังนั้นคุณสามารถดึงความคิดเห็นจากเนื้อหาข่าวได้ จากตัวแปร comments
 โดยตัวแปร html ใน comments คือ HTML ทั้งหมดใน section ของ comment
