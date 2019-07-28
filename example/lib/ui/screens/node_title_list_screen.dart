@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_blognone/dao/blognone_node_title_dao.dart';
 import 'package:flutter_blognone/flutter_blognone.dart';
 import 'package:flutter_blognone_example/ui/screens/node_content_screen.dart';
+import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
 
 class NodeTitleListScreen extends StatefulWidget {
   @override
@@ -9,7 +10,17 @@ class NodeTitleListScreen extends StatefulWidget {
 }
 
 class _NodeTitleListScreenState extends State<NodeTitleListScreen> {
-  FlutterBlognone bn = FlutterBlognone();
+  int currentPage = 0;
+  bool isLoadingMore = false;
+  FlutterBlognone bn;
+  List<BlognoneNodeTitleDao> listNode;
+
+  @override
+  void initState() {
+    bn = FlutterBlognone();
+    listNode = List();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,16 +31,18 @@ class _NodeTitleListScreenState extends State<NodeTitleListScreen> {
       ),
       body: Container(
         child: FutureBuilder(
-            future: bn.fetchNodeTitleList(),
+            future: loadNodeTitleList(),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
-                List<BlognoneNodeTitleDao> listNode = snapshot.data;
-                return ListView.builder(
-                  itemCount: listNode.length,
-                  itemBuilder: (context, i) {
-                    return buildRowNodeTitle(listNode[i]);
-                  },
-                );
+                List<BlognoneNodeTitleDao> list = snapshot.data;
+                return LazyLoadScrollView(
+                    onEndOfPage: () => loadMore(),
+                    child: ListView.builder(
+                      itemCount: list.length,
+                      itemBuilder: (context, i) {
+                        return buildRowNodeTitle(list[i]);
+                      },
+                    ));
               } else {
                 return Container();
               }
@@ -114,5 +127,26 @@ class _NodeTitleListScreenState extends State<NodeTitleListScreen> {
               ))
       ]),
     );
+  }
+
+  Future loadMore() async {
+    if (!isLoadingMore) {
+      isLoadingMore = true;
+      List<BlognoneNodeTitleDao> list = await bn.fetchNodeTitleList(page: currentPage + 1);
+      listNode.addAll(list);
+      currentPage++;
+      isLoadingMore = false;
+    } else {
+      //
+    }
+
+    setState(() {});
+  }
+
+  Future<List<BlognoneNodeTitleDao>> loadNodeTitleList() async {
+    if (currentPage == 0 && listNode.isEmpty) {
+      listNode = await bn.fetchNodeTitleList(page: currentPage);
+    }
+    return listNode;
   }
 }

@@ -1,3 +1,5 @@
+import 'package:flutter_blognone/dao/blognone_node_comment_dao.dart';
+import 'package:flutter_blognone/dao/blognone_node_comment_item_dao.dart';
 import 'package:flutter_blognone/dao/blognone_node_content_dao.dart';
 import 'package:flutter_blognone/dao/blognone_node_title_dao.dart';
 import 'package:html/dom.dart';
@@ -93,7 +95,6 @@ class BlognoneScraping {
     int nodeId = int.parse(strNodeId);
     nodeContent.id = nodeId;
 
-
     String urlImage = document.querySelector("div.node-image>img").attributes["src"];
     nodeContent.urlImage = urlImage;
 
@@ -123,30 +124,79 @@ class BlognoneScraping {
     nodeContent.writer = writer;
 
     Element nodeDate = elementNode.querySelector("span.submitted");
-    nodeDate.querySelector("span.username").remove();
-    nodeDate.querySelector("div.user_badges").remove();
+    nodeDate.querySelector("span.username")?.remove();
+    nodeDate.querySelector("div.user_badges")?.remove();
     String strDate = nodeDate.text.replaceAll("By", "").replaceAll("on", "").replaceAll(":", "").trim();
     nodeContent.date = strDate;
 
     // get content
     Element elementContent = elementNode.querySelector("div.content");
-    elementContent.querySelector("div.social-sharing").remove();
+    elementContent.querySelector("div.social-sharing")?.remove();
     String htmlBody = elementContent.innerHtml;
 
     htmlBody = "<div class=\"content\"  style=\"background:" + "" + "\">" + htmlBody + "</div>";
     nodeContent.contentFull = htmlBody;
 
-//      Element elementCommentArea = document.querySelector("#comment-area");
-//      elementCommentArea.querySelector("h2").remove();
-//      elementCommentArea.querySelector("#comments");
-//      String htmlComment = elementCommentArea.innerHtml;
-//      nodeContent.setHtmlComment(htmlComment);
-//
-//      int countComment = doc.select("div[id^=cid-]").size();
-//      nodeContent.setCountComment(countComment);
-//      Log.d("BENZNEST LOG", "countComment = " + countComment);
-
+    BlognoneNodeCommentDao comment = scrapeComment(body);
+    nodeContent.comments = comment;
 
     return nodeContent;
+  }
+
+  static BlognoneNodeCommentDao scrapeComment(String body) {
+    Document document = html.parse(body);
+    Element elementCommentArea = document.querySelector("#comment-area");
+    elementCommentArea.querySelector("h2").remove();
+    elementCommentArea.querySelector("#comments");
+    String htmlComment = elementCommentArea.innerHtml;
+
+    BlognoneNodeCommentDao comment = BlognoneNodeCommentDao();
+    comment.html = htmlComment;
+
+    List<Element> listCommentElement = document.querySelectorAll("div[id^=cid-]");
+    comment.countComment = listCommentElement.length;
+
+    List<BlognoneNodeCommentItemDao> listComment = List();
+
+    for (Element commentElement in listCommentElement) {
+      BlognoneNodeCommentItemDao commentItem = scrapeCommentItem(commentElement);
+      if (commentItem.isReplyComment) {
+        for (int i = 0; i < listComment.length; i++) {
+          listComment[i].addCommentItemIfTarget(commentItem);
+        }
+      } else {
+        listComment.add(commentItem);
+      }
+    }
+
+    comment.items = listComment;
+    return comment;
+  }
+
+  static BlognoneNodeCommentItemDao scrapeCommentItem(Element commentElement) {
+    BlognoneNodeCommentItemDao commentItem = BlognoneNodeCommentItemDao();
+
+    commentItem.id = int.parse(commentElement.attributes["id"].replaceAll("cid-", ""));
+
+    List<Element> listCommentTarget = commentElement.querySelectorAll(".comment-target");
+    if (listCommentTarget.length > 1) {
+      commentItem.replyTo = int.parse(listCommentTarget[1].text.replaceAll("Reply to:", ""));
+    }
+
+    Element commentContent = commentElement.querySelector("div.comment-content");
+    commentItem.html = commentContent.innerHtml.replaceAll("\n", "").trim();
+
+    try {
+      commentItem.avatar = commentElement.querySelector("div.user-picture>img")?.attributes["src"];
+    } catch (error) {
+      //
+    }
+
+    commentItem.username = commentElement.querySelector(".username").text;
+
+    Element commentInfoElement = commentElement.querySelector("div.comment-info");
+    commentInfoElement.querySelector(".username")?.remove();
+    commentItem.datetime = commentInfoElement.text.replaceAll("By:", "").replaceAll("\n", "").trim();
+    return commentItem;
   }
 }

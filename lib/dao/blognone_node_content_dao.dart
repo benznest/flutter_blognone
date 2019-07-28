@@ -1,3 +1,5 @@
+import 'package:flutter_blognone/dao/blognone_node_comment_dao.dart';
+
 class BlognoneNodeContentDao {
   int id;
   String title;
@@ -8,6 +10,7 @@ class BlognoneNodeContentDao {
   bool isSticky;
   bool isWorkplaceNode;
   List<String> tags;
+  BlognoneNodeCommentDao comments;
 
   Map<String, dynamic> toJson() {
     return {
@@ -19,6 +22,7 @@ class BlognoneNodeContentDao {
       "date": this.date,
       "isSticky": this.isSticky,
       "isWorkplaceNode": this.isWorkplaceNode,
+      "comments": this.comments.toJson(),
       "tags": (this.tags.map((item) => item).toString()),
     };
   }
